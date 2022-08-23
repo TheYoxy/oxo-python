@@ -1,5 +1,9 @@
 ﻿from tkinter import *
 from tkinter.messagebox import *
+from func import draw_cells
+import constants
+from game import Game
+
 
 # http://tkinter.fdex.eu/doc/caw.html#lignes
 # http://fsincere.free.fr/isn/python/cours_python_tkinter.php#executable
@@ -10,58 +14,61 @@ from tkinter.messagebox import *
 
 def on_key(event):
     # Gestion de l'événement Appui sur une touche du clavier
-    global PosX, PosY, joueur, Pion, Pionx1, Pionx2
+    global curr_x, curr_y, joueur, Pion, Pionx1, Pionx2
     touche = event.keysym
     # déplacement vers le haut
-    if (touche == 'Up' and PosY - 200 > 100):
-        PosY -= 200
+    if (touche == 'Up' and curr_y - constants.CELL_SIZE > 100):
+        curr_y -= constants.CELL_SIZE
      # déplacement vers le bas
-    if (touche == 'Down' and PosY + 200 < 700):
-        PosY += 200
+    if (touche == 'Down' and curr_y + constants.CELL_SIZE < 700):
+        curr_y += constants.CELL_SIZE
      # déplacement vers la droite
-    if (touche == 'Right' and PosX + 200 < 700):
-        PosX += 200
+    if (touche == 'Right' and curr_x + constants.CELL_SIZE < 700):
+        curr_x += constants.CELL_SIZE
      # déplacement vers la gauche
-    if (touche == 'Left' and PosX - 200 > 100):
-        PosX -= 200
+    if (touche == 'Left' and curr_x - constants.CELL_SIZE > 100):
+        curr_x -= constants.CELL_SIZE
 
     # on dessine le pion à sa nouvelle position
     if (joueur == 1):
-        Fen.coords(Pion, PosX-50, PosY-50, PosX+50, PosY+50)
+        window.coords(Pion, curr_x-constants.CELL_CENTER_OFFSET, curr_y-constants.CELL_CENTER_OFFSET,
+                      curr_x+constants.CELL_CENTER_OFFSET, curr_y+constants.CELL_CENTER_OFFSET)
     elif (joueur == 0):
-        Fen.coords(Pionx1, PosX-50, PosY-50, PosX+50, PosY+50)
-        Fen.coords(Pionx2, PosX+50, PosY-50, PosX-50, PosY+50)
+        window.coords(Pionx1, curr_x-constants.CELL_CENTER_OFFSET, curr_y-constants.CELL_CENTER_OFFSET,
+                      curr_x+constants.CELL_CENTER_OFFSET, curr_y+constants.CELL_CENTER_OFFSET)
+        window.coords(Pionx2, curr_x+constants.CELL_CENTER_OFFSET, curr_y-constants.CELL_CENTER_OFFSET,
+                      curr_x-constants.CELL_CENTER_OFFSET, curr_y+constants.CELL_CENTER_OFFSET)
 
 
 def on_enter(event):
-    global joueur, PosX, PosY, grille, coup, Fen, Pion, Pionx1, Pionx2
-    x = int(((PosX+50)/200)-1)
-    y = int(((PosY+50)/200)-1)
+    global joueur, curr_x, curr_y, grille, coup, window, Pion, Pionx1, Pionx2
+    x = int(((curr_x+constants.CELL_CENTER_OFFSET)/constants.CELL_SIZE)-1)
+    y = int(((curr_y+constants.CELL_CENTER_OFFSET)/constants.CELL_SIZE)-1)
 
-    if (joueur == 1 and grille[x][y] == "-"):
-        print("1")
+    if (joueur == 1 and grille[y][x] == "-"):
         joueur = 0
-        grille[x][y] = "o"
-        Fen.create_oval(PosX-75, PosY-75, PosX+75, PosY+75, width=2)
-        Fen.itemconfigure(Pion, state='hidden')
-        Fen.itemconfigure(Pionx1, state='normal')
-        Fen.itemconfigure(Pionx2, state='normal')
-        Fen.coords(Pionx1, PosX-50, PosY-50, PosX+50, PosY+50)
-        Fen.coords(Pionx2, PosX+50, PosY-50, PosX-50, PosY+50)
+        grille[y][x] = "o"
+        window.create_oval(curr_x-constants.CELL_SHAPE_OFFSET, curr_y-constants.CELL_SHAPE_OFFSET,
+                           curr_x+constants.CELL_SHAPE_OFFSET, curr_y+constants.CELL_SHAPE_OFFSET, width=2)
+        window.coords(Pionx1, curr_x-constants.CELL_CENTER_OFFSET, curr_y-constants.CELL_CENTER_OFFSET,
+                      curr_x+constants.CELL_CENTER_OFFSET, curr_y+constants.CELL_CENTER_OFFSET)
+        window.coords(Pionx2, curr_x+constants.CELL_CENTER_OFFSET, curr_y-constants.CELL_CENTER_OFFSET,
+                      curr_x-constants.CELL_CENTER_OFFSET, curr_y+constants.CELL_CENTER_OFFSET)
         coup += 1
-    elif (joueur == 0 and grille[x][y] == "-"):
-        print("0")
+    elif (joueur == 0 and grille[y][x] == "-"):
         joueur = 1
-        grille[x][y] = "x"
-        Fen.create_line(PosX-75, PosY-75, PosX+75, PosY+75, width=2)
-        Fen.create_line(PosX+75, PosY-75, PosX-75, PosY+75, width=2)
-        Fen.itemconfigure(Pion, state='normal')
-        Fen.itemconfigure(Pionx1, state='hidden')
-        Fen.itemconfigure(Pionx2, state='hidden')
-        Fen.coords(Pion, PosX-50, PosY-50, PosX+50, PosY+50)
+        grille[y][x] = "x"
+        window.create_line(curr_x-constants.CELL_SHAPE_OFFSET, curr_y-constants.CELL_SHAPE_OFFSET,
+                           curr_x+constants.CELL_SHAPE_OFFSET, curr_y+constants.CELL_SHAPE_OFFSET, width=2)
+        window.create_line(curr_x+constants.CELL_SHAPE_OFFSET, curr_y-constants.CELL_SHAPE_OFFSET,
+                           curr_x-constants.CELL_SHAPE_OFFSET, curr_y+75, width=2)
+        window.coords(Pion, curr_x-constants.CELL_CENTER_OFFSET, curr_y-constants.CELL_CENTER_OFFSET,
+                      curr_x+constants.CELL_CENTER_OFFSET, curr_y+constants.CELL_CENTER_OFFSET)
         coup += 1
 
-    end = is_victoire()
+    end = is_win()
+
+    
 
     print(f'0{grille[0]}')
     print(f'1{grille[1]}')
@@ -72,7 +79,8 @@ def on_enter(event):
     elif (coup == 9):
         not_win()
 
-def is_victoire():
+
+def is_win():
     global grille
     e = 0
     while (e <= 2):
@@ -93,50 +101,38 @@ def win(joueur):
     global scj1, scj2
     if (joueur == "o"):
         scj1 += 1
-        j1.delete(1.0, 2.10)
-        j1.insert(END, "Joueur 1:\n")
-        j1.insert(END, scj1)
+        player1_text.delete(1.0, 2.10)
+        player1_text.insert(END, "Joueur 1:\n")
+        player1_text.insert(END, scj1)
         showinfo("Résultat", "Le joueur 1 a gagné")
     if (joueur == "x"):
         scj2 += 1
-        j2.delete(1.0, 2.10)
-        j2.insert(END, "Joueur 2:\n")
-        j2.insert(END, scj2)
+        player2_text.delete(1.0, 2.10)
+        player2_text.insert(END, "Joueur 2:\n")
+        player2_text.insert(END, scj2)
         showinfo("Résultat", "Le joueur 2 a gagné")
-    main_loop()
-    Mafenetre.quit()
+    reset_window()
 
 
 def not_win():
     showinfo("Résultat", "Aucun joueur n'a gagné")
-    main_loop()
+    reset_window()
 
 
-def main_loop():
-    global grille, coup, PosX, PosY, Fen
+def reset_window():
+    global grille, coup, curr_x, curr_y, window
     grille = [["-", "-", "-"], ["-", "-", "-"], ["-", "-", "-"]]
     coup = 1
-    PosX = 350
-    PosY = 350
-    Fen.destroy()
-    Fen = Canvas(Mafenetre, width=700, height=720, bg='white')
-    Fen.pack(side=LEFT)
-    # Fen.create_rectangle(0,0,1280,720,fill='white')
-    # Tableau Vertical
-    Fen.create_line(50, 50, 50, 650, fill='black', width=1)
-    Fen.create_line(250, 50, 250, 650, fill='black', width=1)
-    Fen.create_line(450, 50, 450, 650, fill='black', width=1)
-    Fen.create_line(650, 50, 650, 650, fill='black', width=1)
+    curr_x = 350
+    curr_y = 350
 
-    # Tableau Horizontal
-    Fen.create_line(50, 50, 650, 50, fill='black', width=1)
-    Fen.create_line(50, 250, 650, 250, fill='black', width=1)
-    Fen.create_line(50, 450, 650, 450, fill='black', width=1)
-    Fen.create_line(50, 650, 650, 650, fill='black', width=1)
+    window.destroy()
+    window = Canvas(main_window, width=700, height=720, bg='white')
+    window.pack(side=LEFT)
+
+    draw_cells(window)
 
 
-"""def Fin():
-  """
 #  Score J1 & 2
 scj1 = 0
 scj2 = 0
@@ -146,56 +142,52 @@ joueur = 1
 coup = 1
 
 # Position initiale du pion
-PosX = 350
-PosY = 350
+curr_x = 350
+curr_y = 350
 
 # Création d'un widget Canvas (zone graphique)
-Largeur = 1280
-Hauteur = 720
+width = 1280
+height = 720
 
 # Création de la fenêtre principale
-Mafenetre = Tk()
-Mafenetre.title('OXO')
+main_window = Tk()
+main_window.title('OXO')
 
-Fen = Canvas(Mafenetre, width=700, height=720, bg='white')
+window = Canvas(main_window, width=700, height=720, bg='white')
 
-# Tableau Vertical
-Fen.create_line(50, 50, 50, 650, fill='black', width=1)
-Fen.create_line(250, 50, 250, 650, fill='black', width=1)
-Fen.create_line(450, 50, 450, 650, fill='black', width=1)
-Fen.create_line(650, 50, 650, 650, fill='black', width=1)
+draw_cells(window)
 
-# Tableau Horizontal
-Fen.create_line(50, 50, 650, 50, fill='black', width=1)
-Fen.create_line(50, 250, 650, 250, fill='black', width=1)
-Fen.create_line(50, 450, 650, 450, fill='black', width=1)
-Fen.create_line(50, 650, 650, 650, fill='black', width=1)
 # O
-Pion = Fen.create_oval(PosX-50, PosY-50, PosX+50, PosY+50, width=2)
+Pion = window.create_oval(curr_x-constants.CELL_CENTER_OFFSET, curr_y-constants.CELL_CENTER_OFFSET,
+                          curr_x+constants.CELL_CENTER_OFFSET, curr_y+constants.CELL_CENTER_OFFSET, width=2)
 # X
-Pionx1 = Fen.create_line(PosX-50, PosY-50, PosX+50,
-                         PosY+50, width=2, state='hidden')
-Pionx2 = Fen.create_line(PosX+50, PosY-50, PosX-50,
-                         PosY+50, width=2, state='hidden')
+Pionx1 = window.create_line(curr_x-constants.CELL_CENTER_OFFSET, curr_y-constants.CELL_CENTER_OFFSET, curr_x+constants.CELL_CENTER_OFFSET,
+                            curr_y+constants.CELL_CENTER_OFFSET, width=2)
+Pionx2 = window.create_line(curr_x+constants.CELL_CENTER_OFFSET, curr_y-constants.CELL_CENTER_OFFSET, curr_x-constants.CELL_CENTER_OFFSET,
+                            curr_y+constants.CELL_CENTER_OFFSET, width=2)
 
-j2 = Text(Mafenetre, width=10, height=2)
-j2.pack(side=RIGHT)
-j2.insert(END, "Joueur 2:\n")
-j2.insert(END, scj2)
+player2_text = Text(main_window, width=10, height=2)
+player2_text.pack(side=RIGHT)
+player2_text.insert(END, "Joueur 2:\n")
+player2_text.insert(END, scj2)
 
-j1 = Text(Mafenetre, width=10, height=2)
-j1.pack(side=RIGHT)
-j1.insert(END, "Joueur 1:\n")
-j1.insert(END, scj1)
+player1_text = Text(main_window, width=10, height=2)
+player1_text.pack(side=RIGHT)
+player1_text.insert(END, "Joueur 1:\n")
+player1_text.insert(END, scj1)
 
-Fen.focus_set()
-Fen.bind('<Key>', on_key)
-Fen.bind('<Return>', on_enter)
-Fen.pack(padx=5, pady=5)
+window.focus_set()
+window.event_add('<<arrow>>', '')
+window.bind('<Key>', on_key)
+window.bind('<Return>', on_enter)
+window.pack(padx=5, pady=5)
+
+
+game = Game()
 
 
 # Création d'un widget Button (bouton Quitter)
-Button(Mafenetre, text='Fin du Game', command=Mafenetre.destroy).pack(
+Button(main_window, text='Fin du Game', command=main_window.destroy).pack(
     side=BOTTOM, padx=5, pady=5)
 
-Mafenetre.mainloop()
+main_window.mainloop()
