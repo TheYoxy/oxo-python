@@ -68,8 +68,6 @@ def on_enter(event):
 
     end = is_win()
 
-    
-
     print(f'0{grille[0]}')
     print(f'1{grille[1]}')
     print(f'2{grille[2]}')
@@ -132,62 +130,62 @@ def reset_window():
 
     draw_cells(window)
 
+def main():
+    
+    #  Score J1 & 2
+    scj1 = 0
+    scj2 = 0
 
-#  Score J1 & 2
-scj1 = 0
-scj2 = 0
+    grille = [["-", "-", "-"], ["-", "-", "-"], ["-", "-", "-"]]
+    joueur = 1
+    coup = 1
 
-grille = [["-", "-", "-"], ["-", "-", "-"], ["-", "-", "-"]]
-joueur = 1
-coup = 1
+    # Position initiale du pion
+    curr_x = 350
+    curr_y = 350
+    # Création d'un widget Canvas (zone graphique)
+    width = 1280
+    height = 720
 
-# Position initiale du pion
-curr_x = 350
-curr_y = 350
+    # Création de la fenêtre principale
+    main_window = Tk()
+    main_window.title('OXO')
 
-# Création d'un widget Canvas (zone graphique)
-width = 1280
-height = 720
+    window = Canvas(main_window, width=700, height=720, bg='white')
 
-# Création de la fenêtre principale
-main_window = Tk()
-main_window.title('OXO')
+    draw_cells(window)
 
-window = Canvas(main_window, width=700, height=720, bg='white')
+    # O
+    Pion = window.create_oval(curr_x-constants.CELL_CENTER_OFFSET, curr_y-constants.CELL_CENTER_OFFSET,
+                              curr_x+constants.CELL_CENTER_OFFSET, curr_y+constants.CELL_CENTER_OFFSET, width=2)
+    # X
+    Pionx1 = window.create_line(curr_x-constants.CELL_CENTER_OFFSET, curr_y-constants.CELL_CENTER_OFFSET, curr_x+constants.CELL_CENTER_OFFSET,
+                                curr_y+constants.CELL_CENTER_OFFSET, width=2)
+    Pionx2 = window.create_line(curr_x+constants.CELL_CENTER_OFFSET, curr_y-constants.CELL_CENTER_OFFSET, curr_x-constants.CELL_CENTER_OFFSET,
+                                curr_y+constants.CELL_CENTER_OFFSET, width=2)
 
-draw_cells(window)
+    player2_text = Text(main_window, width=10, height=2)
+    player2_text.pack(side=RIGHT)
+    player2_text.insert(END, "Joueur 2:\n")
+    player2_text.insert(END, scj2)
 
-# O
-Pion = window.create_oval(curr_x-constants.CELL_CENTER_OFFSET, curr_y-constants.CELL_CENTER_OFFSET,
-                          curr_x+constants.CELL_CENTER_OFFSET, curr_y+constants.CELL_CENTER_OFFSET, width=2)
-# X
-Pionx1 = window.create_line(curr_x-constants.CELL_CENTER_OFFSET, curr_y-constants.CELL_CENTER_OFFSET, curr_x+constants.CELL_CENTER_OFFSET,
-                            curr_y+constants.CELL_CENTER_OFFSET, width=2)
-Pionx2 = window.create_line(curr_x+constants.CELL_CENTER_OFFSET, curr_y-constants.CELL_CENTER_OFFSET, curr_x-constants.CELL_CENTER_OFFSET,
-                            curr_y+constants.CELL_CENTER_OFFSET, width=2)
+    player1_text = Text(main_window, width=10, height=2)
+    player1_text.pack(side=RIGHT)
+    player1_text.insert(END, "Joueur 1:\n")
+    player1_text.insert(END, scj1)
 
-player2_text = Text(main_window, width=10, height=2)
-player2_text.pack(side=RIGHT)
-player2_text.insert(END, "Joueur 2:\n")
-player2_text.insert(END, scj2)
+    window.focus_set()
+    window.bind('<Key>', on_key)
+    window.bind('<Return>', on_enter)
+    window.pack(padx=5, pady=5)
 
-player1_text = Text(main_window, width=10, height=2)
-player1_text.pack(side=RIGHT)
-player1_text.insert(END, "Joueur 1:\n")
-player1_text.insert(END, scj1)
+    game = Game()
 
-window.focus_set()
-window.event_add('<<arrow>>', '')
-window.bind('<Key>', on_key)
-window.bind('<Return>', on_enter)
-window.pack(padx=5, pady=5)
+    # Création d'un widget Button (bouton Quitter)
+    Button(main_window, text='Fin du Game', command=main_window.destroy).pack(
+        side=BOTTOM, padx=5, pady=5)
 
+    main_window.mainloop()
 
-game = Game()
-
-
-# Création d'un widget Button (bouton Quitter)
-Button(main_window, text='Fin du Game', command=main_window.destroy).pack(
-    side=BOTTOM, padx=5, pady=5)
-
-main_window.mainloop()
+if __name__ == '__main__':
+    main()
